@@ -1,0 +1,12 @@
+Flask==3.0.2
+langchain
+langchain-community
+sentence-transformers
+faiss-cpu
+unstructured
+pdfminer.six
+requests
+werkzeug
+pydantic
+python-dotenv
+markdown

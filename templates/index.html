@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tutor ML - Premium RAG Assistant</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #818cf8;
+            --primary-glow: rgba(129, 140, 248, 0.3);
+            --bg-dark: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar Glassmorphism */
+        .sidebar {
+            width: 320px;
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border-right: 1px solid var(--border);
+            padding: 2.5rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            z-index: 10;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            padding: 10px;
+            border-radius: 12px;
+            display: flex;
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+
+        h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: -0.02em;
+        }
+
+        /* Main Glass Layout */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            padding: 2rem;
+            scroll-behavior: smooth;
+        }
+
+        .chat-container::-webkit-scrollbar { width: 6px; }
+        .chat-container::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+        /* Message Bubbles */
+        .message-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            animation: fadeIn 0.4s ease-out backwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 1.25rem;
+            border-radius: 20px;
+            line-height: 1.6;
+            font-size: 0.95rem;
+            position: relative;
+        }
+
+        .student {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            color: white;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+        }
+
+        .assistant {
+            align-self: flex-start;
+            background: var(--glass-bg);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--glass-border);
+            border-bottom-left-radius: 4px;
+        }
+
+        /* Structured Cards */
+        .concept-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .concept-header h3 { margin: 0; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.05em; }
+
+        .content-box {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border);
+        }
+
+        .source-tag {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 1rem;
+        }
+
+        /* Interactive Elements */
+        .context-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 1rem;
+            padding: 8px 12px;
+            background: var(--glass-border);
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: var(--primary);
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .context-toggle:hover {
+            background: var(--primary-glow);
+            border-color: var(--primary);
+        }
+
+        .context-area {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #000;
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
+            color: #10b981;
+            border-left: 3px solid #10b981;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        /* Input Area Wrapper */
+        .input-wrapper {
+            padding: 2rem;
+            background: linear-gradient(to top, var(--bg-dark) 80%, transparent);
+        }
+
+        .input-area {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            padding: 8px 8px 8px 20px;
+            border-radius: 100px;
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        input[type="text"] {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 12px 0;
+            outline: none;
+            font-size: 1rem;
+        }
+
+        .send-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05) rotate(-5deg);
+            background: #4f46e5;
+        }
+
+        /* Upload Section */
+        .upload-card {
+            background: var(--glass-bg);
+            border: 1px dashed var(--glass-border);
+            padding: 1.25rem;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .file-label {
+            display: block;
+            margin-bottom: 12px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .custom-upload {
+            background: var(--glass-border);
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .reset-btn {
+            margin-top: auto;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .reset-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border-color: rgba(239, 68, 68, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="logo-section">
+            <div class="logo-icon">
+                <i data-lucide="brain-circuit" color="white" size="24"></i>
+            </div>
+            <h1>AI Tutor <span style="color: var(--primary);">ML</span></h1>
+        </div>
+
+        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
+            Sistema Experto RAG con procesamiento local y privacidad garantizada.
+        </p>
+        
+        <div class="upload-card">
+            <span class="file-label">Aumentar Conocimiento</span>
+            <form action="/upload" method="post" enctype="multipart/form-data">
+                <input type="file" name="file" id="file-upload" hidden onchange="this.form.submit()">
+                <label for="file-upload" class="custom-upload">
+                    <i data-lucide="upload-cloud" size="18"></i>
+                    Subir PDF/MD
+                </label>
+            </form>
+        </div>
+
+        <div style="flex: 1;"></div>
+
+        <a href="/reset" class="reset-btn">
+            <i data-lucide="rotate-ccw" size="18"></i>
+            Reiniciar Sesión
+        </a>
+    </aside>
+
+    <main class="main-content">
+        <div class="chat-container">
+            <div class="message-wrapper assistant" style="max-width: 100%; padding: 1.5rem; text-align: center; background: transparent; border: none;">
+                <h2 style="margin: 0; font-size: 1.5rem; letter-spacing: -0.01em;">¡Bienvenido al <span style="color: var(--primary)">ML Lab</span>!</h2>
+                <p style="color: var(--text-muted); margin-top: 8px;">Pregunta sobre fundamentos, modelos o métricas.</p>
+            </div>
+
+            {% for entry in history %}
+                <div class="message-wrapper">
+                    <div class="message {{ 'student' if entry.role == 'Estudiante' else 'assistant' }}">
+                        {% if entry.role == "Estudiante" %}
+                            {{ entry.message }}
+                        {% else %}
+                            <div class="structured-card">
+                                <div class="concept-header">
+                                    <i data-lucide="lightbulb" size="18"></i>
+                                    <h3>{{ entry.structured_response.concepto }}</h3>
+                                </div>
+                                <div class="content-box">
+                                    <p style="margin: 0; font-weight: 500; font-size: 1rem;">Explicación</p>
+                                    <p style="margin: 8px 0 0 0; color: var(--text-muted);">{{ entry.structured_response.explicacion }}</p>
+                                </div>
+                                <div class="content-box" style="border-left: 3px solid var(--primary);">
+                                    <p style="margin: 0; font-weight: 500; opacity: 0.8;">Ejemplo Práctico</p>
+                                    <p style="margin: 8px 0 0 0; font-style: italic;">{{ entry.structured_response.ejemplo }}</p>
+                                </div>
+                                
+                                <div class="source-tag">
+                                    <i data-lucide="file-text" size="14"></i>
+                                    Fuente detectada: {{ entry.structured_response.fuente }}
+                                </div>
+                                
+                                <div class="context-toggle" onclick="toggleContext(this)">
+                                    <i data-lucide="terminal" size="14"></i>
+                                    <span>Ver RAG Context</span>
+                                </div>
+                                <div class="context-area">
+                                    {{ entry.context }}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="input-wrapper">
+            <form action="/" method="post" class="input-area">
+                <i data-lucide="zap" color="var(--primary)" size="20"></i>
+                <input type="text" name="message" id="message-input" placeholder="¿Qué deseas aprender hoy?..." required autocomplete="off">
+                <button type="submit" class="send-btn">
+                    <i data-lucide="send" size="20"></i>
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        function toggleContext(element) {
+            const area = element.nextElementSibling;
+            const isVisible = area.style.display === 'block';
+            area.style.display = isVisible ? 'none' : 'block';
+            element.querySelector('span').innerText = isVisible ? 'Ver RAG Context' : 'Ocultar Contexto';
+        }
+
+        // Auto-scroll logic
+        const chat = document.querySelector('.chat-container');
+        chat.scrollTop = chat.scrollHeight;
+
+        // Focus input on load
+        document.getElementById('message-input').focus();
+    </script>
+</body>
+</html>
