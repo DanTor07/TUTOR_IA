@@ -1,59 +1,75 @@
 # 📚 AI Tutor ML - Asistente Académico RAG Local
 
-Este proyecto es un **Asistente Experto en Machine Learning** que utiliza una arquitectura **RAG (Retrieval-Augmented Generation)** y agentes para funcionar de manera local, garantizando la privacidad de los datos académicos.
+**AI Tutor ML** es un ecosistema avanzado de aprendizaje diseñado para asistir a estudiantes en la comprensión de Inteligencia Artificial y Machine Learning. Utiliza una arquitectura **RAG (Retrieval-Augmented Generation)** descentralizada que permite procesar documentos privados de manera local, eliminando la dependencia de APIs en la nube y garantizando la privacidad.
 
-## 🎯 Propósito del Asistente
-El **Tutor Académico de ML** está diseñado para ayudar a estudiantes universitarios a navegar conceptos complejos como redes neuronales, overfitting y métricas de evaluación. A diferencia de un chat convencional, este sistema:
-1.  **Consulta una Base de Conocimiento:** Solo responde basándose en los documentos (PDF, TXT, MD) que se proporcionen en la carpeta correspondiente.
-2.  **Mantiene el Rigor Académico:** Cita las fuentes de donde extrae la información.
-3.  **Entrega Respuestas Estructuradas:** Devuelve explicaciones y ejemplos prácticos en un formato claro.
+## 🚀 Propósito y Funcionalidades
+Este asistente actúa como un experto en la materia que:
+-   **Analiza Documentos:** Extrae conocimiento de archivos PDF, Markdown y TXT cargados en su base de conocimiento.
+-   **Enseñanza Socrática y Estructurada:** Proporciona definiciones académicas profundas acompañadas de analogías y ejemplos prácticos.
+-   **Transparencia de Datos:** Permite visualizar los fragmentos exactos de los textos originales que fundamentan cada respuesta.
+-   **Privacidad por Diseño:** Todo el procesamiento (embeddings, búsqueda vectorial e inferencia de lenguaje) ocurre en el hardware local.
 
-## 🏗️ Arquitectura Técnica (RAG Local)
-El flujo de información sigue estos pasos:
--   **Loader:** Procesa archivos locales en `knowledge_base/` usando `Unstructured` y `PyPDF`.
--   **Embeddings:** Genera representaciones vectoriales usando el modelo local `all-MiniLM-L6-v2`.
--   **Vector Store:** Almacena los vectores en **FAISS**, permitiendo búsquedas semánticas instantáneas.
--   **Retriever:** Encuentra los fragmentos más relevantes para cada pregunta.
--   **Ollama Agent:** Envía el contexto recuperado a un LLM local (ej. Mistral) para generar la respuesta final.
+## 🏗️ Arquitectura del Sistema
+-   **Motor de Recuperación:** Basado en `LangChain` y `FAISS` para búsquedas semánticas ultrarrápidas.
+-   **Modelos de Lenguaje:** Conexión nativa con `Ollama` para ejecutar modelos como `Phi-3`, `Mistral` o `Llama`.
+-   **Interfaz de Usuario:** Aplicación web moderna con diseño *Glassmorphism* optimizada para la interacción educativa.
 
-## 🧠 Diseño de Prompts
+---
 
-El sistema utiliza técnicas avanzadas de ingeniería de prompts:
+## 🛠️ Guía de Instalación y Configuración
 
-### System Prompt Estructurado
-Se define una personalidad de tutor académico con instrucciones estrictas:
--   Responder **únicamente** con el contexto proporcionado.
--   Si no hay información suficiente, admitirlo honestamente.
--   Mantener una salida en formato JSON para la integración con la interfaz.
+Siga estos pasos para desplegar el asistente en un entorno local:
 
-### Few-Shot Prompting
-Para asegurar que el modelo entienda el formato y el tono, el prompt incluye ejemplos:
-> **Pregunta:** ¿Qué es overfitting?
-> **Respuesta:** { "concepto": "Overfitting", "explicacion": "Es cuando un modelo memoriza los datos...", "ejemplo": "Un modelo que falla con datos nuevos", "fuente": "ml_basics.md" }
-
-### Delimitadores de Contexto
-Se utilizan triples comillas (`"""`) para separar claramente el conocimiento recuperado de la pregunta del usuario, evitando alucinaciones o inyecciones de prompt.
-
-## 🛠️ Instalación y Uso
-
-### 1. Requisitos
--   **Python 3.9+**
--   **Ollama** (ejecutando `mistral` o `llama3`): [ollama.com](https://ollama.com)
-
-### 2. Configuración
+### 1. Clonar el Repositorio
 ```bash
-# Instalar dependencias
+git clone https://github.com/DanTor07/TUTOR_IA.git
+cd TUTOR_IA
+```
+
+### 2. Preparar el Entorno Virtual (Recomendado)
+Es altamente recomendable utilizar un entorno virtual para evitar conflictos de dependencias:
+
+**En Windows (PowerShell):**
+```powershell
+python -m venv env
+.\env\Scripts\Activate.ps1
+```
+
+**En Linux / macOS:**
+```bash
+python3 -m venv env
+source env/bin/activate
+```
+
+### 3. Instalar Dependencias
+Una vez activado el entorno, instale todos los componentes necesarios:
+```bash
 pip install -r requirements.txt
 ```
 
-### 3. Ejecución
-1.  Asegurar que Ollama esté en ejecución.
-2.  Ejecutar: `flask run` o `python app.py`.
-3.  Acceder a `http://127.0.0.1:5000`.
+### 4. Configurar Ollama
+1.  Instalar Ollama desde [ollama.com](https://ollama.com).
+2.  Asegurar que el servicio esté corriendo en segundo plano.
+3.  Descargar el modelo preferido (por defecto configurado para `phi3`):
+    ```bash
+    ollama run phi3
+    ```
 
-## 📂 Estructura del Proyecto
--   `rag/`: Motor de ingesta y búsqueda.
--   `agent/`: Cerebro del asistente (conexión local).
--   `prompts/`: Definición de lógica y ejemplos.
--   `knowledge_base/`: Documentos de estudio.
--   `templates/`: Interfaz de usuario mejorada.
+---
+
+## 🚀 Ejecución del Asistente
+1.  **Cargar Documentos:** Colocar los archivos PDF o TXT de estudio en la carpeta `knowledge_base/`.
+2.  **Lanzar el Servidor:**
+    ```bash
+    python app.py
+    ```
+3.  **Acceder al Chat:** Abrir el navegador en [http://127.0.0.1:5000](http://127.0.0.1:5000).
+
+---
+
+## 📂 Estructura de Módulos
+-   `rag/`: Implementación del pipeline de datos y búsqueda semántica.
+-   `agent/`: Lógica del asistente y comunicación con el LLM local.
+-   `prompts/`: Definición de la personalidad experta y ejemplos de entrenamiento.
+-   `knowledge_base/`: Repositorio local de documentos de estudio.
+-   `templates/`: Interfaz de usuario de alta fidelidad.
