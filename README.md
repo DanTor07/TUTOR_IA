@@ -10,9 +10,28 @@ Este asistente actúa como un experto en la materia que:
 -   **Privacidad por Diseño:** Todo el procesamiento (embeddings, búsqueda vectorial e inferencia de lenguaje) ocurre en el hardware local.
 
 ## 🏗️ Arquitectura del Sistema
--   **Motor de Recuperación:** Basado en `LangChain` y `FAISS` para búsquedas semánticas ultrarrápidas.
 -   **Modelos de Lenguaje:** Conexión nativa con `Ollama` para ejecutar modelos como `Phi-3`, `Mistral` o `Llama`.
 -   **Interfaz de Usuario:** Aplicación web moderna con diseño *Glassmorphism* optimizada para la interacción educativa.
+
+## ⚙️ Configuración del Sistema y Formato de Salida
+El sistema opera bajo un conjunto estricto de directrices (System Prompt) que guían su comportamiento:
+- **Personalidad:** Actúa como un tutor académico experto en Machine Learning.
+- **Restricción de Conocimiento:** Responde única y exclusivamente utilizando la información de los documentos proporcionados. Si la respuesta no está, debe indicarlo explícitamente.
+- **Formato de Salida (JSON):** Todas las respuestas del modelo de lenguaje se entregan bajo una estructura JSON inmutable para integrarse con la interfaz visual. El formato requerido es:
+```json
+{
+  "concepto": "Nombre técnico del concepto analizado",
+  "explicacion": "Definición clara y profunda basada en el contexto",
+  "ejemplo": "Un escenario práctico o analogía",
+  "fuente": "Nombre exacto del archivo de origen"
+}
+```
+
+## 📚 Base de Conocimiento
+El asistente fundamenta todas sus respuestas en los documentos almacenados localmente en el directorio `knowledge_base/`. 
+- **Fuentes Soportadas:** Archivos `.md` (Markdown), `.txt` y `.pdf`.
+- **Funcionamiento:** Antes de que el modelo de lenguaje genere una respuesta, el sistema busca en estos archivos el contexto más relevante a la pregunta del estudiante.
+- **Transparencia:** Cada vez que el tutor responde, cita el nombre del documento específico de la `knowledge_base` que utilizó para generar la explicación.
 
 ---
 
