@@ -10,8 +10,10 @@ Este asistente actúa como un experto en la materia que:
 -   **Privacidad por Diseño:** Todo el procesamiento (embeddings, búsqueda vectorial e inferencia de lenguaje) ocurre en el hardware local.
 
 ## 🏗️ Arquitectura del Sistema
+-   **Motor de Recuperación (RAG Nativo):** Se desarrolló un motor personalizado desde cero utilizando algoritmos de **TF-IDF** y **BM25**. Este motor divide los documentos en fragmentos (chunks) y los almacena en una base de datos vectorial local basada en archivos JSON.
 -   **Modelos de Lenguaje:** Conexión nativa con `Ollama` para ejecutar modelos como `Phi-3`, `Mistral` o `Llama`.
 -   **Interfaz de Usuario:** Aplicación web moderna con diseño *Glassmorphism* optimizada para la interacción educativa.
+
 
 ## ⚙️ Configuración del Sistema y Formato de Salida
 El sistema opera bajo un conjunto estricto de directrices (System Prompt) que guían su comportamiento:
