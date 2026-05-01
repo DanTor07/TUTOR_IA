@@ -307,8 +307,24 @@
             Sistema Experto RAG con procesamiento local y privacidad garantizada.
         </p>
         
+        <div class="collection-section" style="background: var(--glass-bg); padding: 1rem; border-radius: 12px; border: 1px solid var(--glass-border);">
+            <span class="file-label" style="display:block; margin-bottom: 8px;">Tema / Espacio</span>
+            <form action="/change_collection" method="post" style="display:flex; gap:8px; margin-bottom:12px;">
+                <select name="collection" onchange="this.form.submit()" style="flex:1; background:transparent; color:white; border:1px solid var(--border); padding:8px; border-radius:8px; font-family: inherit;">
+                    {% for coll in collections %}
+                        <option style="color:black;" value="{{ coll }}" {% if coll == current_collection %}selected{% endif %}>{{ coll }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+            
+            <form action="/create_collection" method="post" style="display:flex; gap:8px;">
+                <input type="text" name="new_collection" placeholder="Nuevo tema..." required style="flex:1; background:transparent; color:white; border:1px solid var(--border); padding:8px; border-radius:8px; font-size:0.8rem; font-family: inherit;">
+                <button type="submit" style="background:var(--primary); border:none; color:white; padding:8px 12px; border-radius:8px; cursor:pointer;"><i data-lucide="plus" size="14"></i></button>
+            </form>
+        </div>
+        
         <div class="upload-card">
-            <span class="file-label">Aumentar Conocimiento</span>
+            <span class="file-label">Añadir a {{ current_collection }}</span>
             <form action="/upload" method="post" enctype="multipart/form-data">
                 <input type="file" name="file" id="file-upload" hidden onchange="this.form.submit()">
                 <label for="file-upload" class="custom-upload">

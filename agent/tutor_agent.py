@@ -7,18 +7,27 @@ from prompts.system_prompt import SYSTEM_PROMPT
 from prompts.fewshot_examples import FEW_SHOT_EXAMPLES
 
 class TutorAgent:
-    def __init__(self, ollama_url="http://localhost:11434/api/generate", model="phi3", kb_dir="knowledge_base"):
+    def __init__(self, ollama_url="http://localhost:11434/api/generate", model="phi3", base_kb_dir="knowledge_base"):
         self.ollama_url = ollama_url
         self.model = model
-        self.kb_dir = kb_dir
-        self.vector_store = BM25Store()
-        
-        # Si la base de datos está vacía, refrescar
+        self.base_kb_dir = base_kb_dir
+        self.current_collection = None
+        self.vector_store = None
+
+    def load_collection(self, collection_name):
+        self.current_collection = collection_name
+        self.vector_store = BM25Store(collection_name=collection_name)
         if not self.vector_store.chunks:
             self.refresh_knowledge_base()
 
     def refresh_knowledge_base(self):
-        chunks = load_and_chunk_documents(self.kb_dir)
+        if not self.current_collection:
+            return
+        collection_dir = os.path.join(self.base_kb_dir, self.current_collection)
+        if not os.path.exists(collection_dir):
+            os.makedirs(collection_dir)
+            
+        chunks = load_and_chunk_documents(collection_dir)
         self.vector_store.fit(chunks)
 
     def ask(self, query):

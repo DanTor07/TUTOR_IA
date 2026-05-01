@@ -9,9 +9,10 @@ def tokenize(text: str) -> list:
     return words
 
 class BM25Store:
-    def __init__(self, db_path="vector_store_data"):
+    def __init__(self, collection_name="default", db_path="vector_store_data"):
         self.db_path = db_path
-        self.db_file = os.path.join(db_path, "bm25_db.json")
+        self.collection_name = collection_name
+        self.db_file = os.path.join(db_path, f"{collection_name}_bm25_db.json")
         self.chunks = []
         self.vocab_idf = {}
         self.avg_doc_length = 0.0
@@ -28,7 +29,7 @@ class BM25Store:
                     self.vocab_idf = data.get("vocab_idf", {})
                     self.avg_doc_length = data.get("avg_doc_length", 0.0)
             except Exception as e:
-                print(f"Error cargando la base de datos BM25: {e}")
+                print(f"Error cargando la base de datos BM25 para {self.collection_name}: {e}")
 
     def _save_db(self):
         if not os.path.exists(self.db_path):
