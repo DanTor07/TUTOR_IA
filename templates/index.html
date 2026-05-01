@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Tutor ML - Premium RAG Assistant</title>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --primary: #818cf8;
@@ -27,7 +29,7 @@
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--bg-dark);
-            background-image: 
+            background-image:
                 radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
                 radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
             color: var(--text-main);
@@ -92,8 +94,14 @@
             scroll-behavior: smooth;
         }
 
-        .chat-container::-webkit-scrollbar { width: 6px; }
-        .chat-container::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+        .chat-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 10px;
+        }
 
         /* Message Bubbles */
         .message-wrapper {
@@ -104,8 +112,15 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .message {
@@ -142,7 +157,12 @@
             margin-bottom: 0.75rem;
         }
 
-        .concept-header h3 { margin: 0; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .concept-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
 
         .content-box {
             background: rgba(0, 0, 0, 0.2);
@@ -293,6 +313,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <aside class="sidebar">
@@ -304,27 +325,34 @@
         </div>
 
         <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
-            Sistema Experto RAG con procesamiento local y privacidad garantizada.
+            Desarrollo de un Asistente Experto basado en RAG, funcionando de manera local para preservar la privacidad
+            de tus datos.
         </p>
-        
-        <div class="collection-section" style="background: var(--glass-bg); padding: 1rem; border-radius: 12px; border: 1px solid var(--glass-border);">
-            <span class="file-label" style="display:block; margin-bottom: 8px;">Tema / Espacio</span>
+
+        <div class="collection-section"
+            style="background: var(--glass-bg); padding: 1rem; border-radius: 12px; border: 1px solid var(--glass-border);">
+            <span class="file-label" style="display:block; margin-bottom: 8px;">Tema / Espacio Vectorial</span>
             <form action="/change_collection" method="post" style="display:flex; gap:8px; margin-bottom:12px;">
-                <select name="collection" onchange="this.form.submit()" style="flex:1; background:transparent; color:white; border:1px solid var(--border); padding:8px; border-radius:8px; font-family: inherit;">
+                <select name="collection" onchange="this.form.submit()"
+                    style="flex:1; background:transparent; color:white; border:1px solid var(--border); padding:8px; border-radius:8px; font-family: inherit;">
                     {% for coll in collections %}
-                        <option style="color:black;" value="{{ coll }}" {% if coll == current_collection %}selected{% endif %}>{{ coll }}</option>
+                    <option style="color:black;" value="{{ coll }}" {% if coll==current_collection %}selected{% endif
+                        %}>{{ coll }}</option>
                     {% endfor %}
                 </select>
             </form>
-            
+
             <form action="/create_collection" method="post" style="display:flex; gap:8px;">
-                <input type="text" name="new_collection" placeholder="Nuevo tema..." required style="flex:1; background:transparent; color:white; border:1px solid var(--border); padding:8px; border-radius:8px; font-size:0.8rem; font-family: inherit;">
-                <button type="submit" style="background:var(--primary); border:none; color:white; padding:8px 12px; border-radius:8px; cursor:pointer;"><i data-lucide="plus" size="14"></i></button>
+                <input type="text" name="new_collection" placeholder="Nuevo tema..." required
+                    style="flex:1; background:transparent; color:white; border:1px solid var(--border); padding:8px; border-radius:8px; font-size:0.8rem; font-family: inherit;">
+                <button type="submit"
+                    style="background:var(--primary); border:none; color:white; padding:8px 12px; border-radius:8px; cursor:pointer;"><i
+                        data-lucide="plus" size="14"></i></button>
             </form>
         </div>
-        
+
         <div class="upload-card">
-            <span class="file-label">Añadir a {{ current_collection }}</span>
+            <span class="file-label">Vectorizar documento en {{ current_collection }}</span>
             <form action="/upload" method="post" enctype="multipart/form-data">
                 <input type="file" name="file" id="file-upload" hidden onchange="this.form.submit()">
                 <label for="file-upload" class="custom-upload">
@@ -344,54 +372,67 @@
 
     <main class="main-content">
         <div class="chat-container">
-            <div class="message-wrapper assistant" style="max-width: 100%; padding: 1.5rem; text-align: center; background: transparent; border: none;">
-                <h2 style="margin: 0; font-size: 1.5rem; letter-spacing: -0.01em;">¡Bienvenido al <span style="color: var(--primary)">ML Lab</span>!</h2>
-                <p style="color: var(--text-muted); margin-top: 8px;">Pregunta sobre fundamentos, modelos o métricas.</p>
+            <div class="message-wrapper assistant"
+                style="max-width: 100%; padding: 1.5rem; text-align: center; background: transparent; border: none;">
+                <h2 style="margin: 0; font-size: 1.5rem; letter-spacing: -0.01em;">¡Bienvenido a tu <span
+                        style="color: var(--primary)">Asistente Experto RAG</span>!</h2>
+                <p style="color: var(--text-muted); margin-top: 12px; line-height: 1.6;">
+                    Este sistema lee tu base de conocimientos (manuales, leyes, documentos) para responder
+                    preguntas.<br>
+                    <strong>¿Cómo probar la implementación?</strong><br>
+                    1. Selecciona o crea un Tema en el panel izquierdo.<br>
+                    2. Sube un documento (PDF/MD). El sistema creará los chunks, los vectorizará (usando TF-IDF/BM25
+                    local) y guardará la base de datos.<br>
+                    3. Hazme una pregunta y extraeré la respuesta usando el mecanismo de recuperación.
+                </p>
             </div>
 
             {% for entry in history %}
-                <div class="message-wrapper">
-                    <div class="message {{ 'student' if entry.role == 'Estudiante' else 'assistant' }}">
-                        {% if entry.role == "Estudiante" %}
-                            {{ entry.message }}
-                        {% else %}
-                            <div class="structured-card">
-                                <div class="concept-header">
-                                    <i data-lucide="lightbulb" size="18"></i>
-                                    <h3>{{ entry.structured_response.concepto }}</h3>
-                                </div>
-                                <div class="content-box">
-                                    <p style="margin: 0; font-weight: 500; font-size: 1rem;">Explicación</p>
-                                    <p style="margin: 8px 0 0 0; color: var(--text-muted);">{{ entry.structured_response.explicacion }}</p>
-                                </div>
-                                <div class="content-box" style="border-left: 3px solid var(--primary);">
-                                    <p style="margin: 0; font-weight: 500; opacity: 0.8;">Ejemplo Práctico</p>
-                                    <p style="margin: 8px 0 0 0; font-style: italic;">{{ entry.structured_response.ejemplo }}</p>
-                                </div>
-                                
-                                <div class="source-tag">
-                                    <i data-lucide="file-text" size="14"></i>
-                                    Fuente detectada: {{ entry.structured_response.fuente }}
-                                </div>
-                                
-                                <div class="context-toggle" onclick="toggleContext(this)">
-                                    <i data-lucide="terminal" size="14"></i>
-                                    <span>Ver RAG Context</span>
-                                </div>
-                                <div class="context-area">
-                                    {{ entry.context }}
-                                </div>
-                            </div>
-                        {% endif %}
+            <div class="message-wrapper">
+                <div class="message {{ 'student' if entry.role == 'Estudiante' else 'assistant' }}">
+                    {% if entry.role == "Estudiante" %}
+                    {{ entry.message }}
+                    {% else %}
+                    <div class="structured-card">
+                        <div class="concept-header">
+                            <i data-lucide="lightbulb" size="18"></i>
+                            <h3>{{ entry.structured_response.concepto }}</h3>
+                        </div>
+                        <div class="content-box">
+                            <p style="margin: 0; font-weight: 500; font-size: 1rem;">Explicación</p>
+                            <p style="margin: 8px 0 0 0; color: var(--text-muted);">{{
+                                entry.structured_response.explicacion }}</p>
+                        </div>
+                        <div class="content-box" style="border-left: 3px solid var(--primary);">
+                            <p style="margin: 0; font-weight: 500; opacity: 0.8;">Ejemplo Práctico</p>
+                            <p style="margin: 8px 0 0 0; font-style: italic;">{{ entry.structured_response.ejemplo }}
+                            </p>
+                        </div>
+
+                        <div class="source-tag">
+                            <i data-lucide="file-text" size="14"></i>
+                            Fuente detectada: {{ entry.structured_response.fuente }}
+                        </div>
+
+                        <div class="context-toggle" onclick="toggleContext(this)">
+                            <i data-lucide="terminal" size="14"></i>
+                            <span>Ver RAG Context</span>
+                        </div>
+                        <div class="context-area">
+                            {{ entry.context }}
+                        </div>
                     </div>
+                    {% endif %}
                 </div>
+            </div>
             {% endfor %}
         </div>
 
         <div class="input-wrapper">
             <form action="/" method="post" class="input-area">
                 <i data-lucide="zap" color="var(--primary)" size="20"></i>
-                <input type="text" name="message" id="message-input" placeholder="¿Qué deseas aprender hoy?..." required autocomplete="off">
+                <input type="text" name="message" id="message-input" placeholder="¿Qué deseas aprender hoy?..." required
+                    autocomplete="off">
                 <button type="submit" class="send-btn">
                     <i data-lucide="send" size="20"></i>
                 </button>
@@ -417,4 +458,5 @@
         document.getElementById('message-input').focus();
     </script>
 </body>
+
 </html>
