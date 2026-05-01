@@ -82,7 +82,7 @@ pip install -r requirements.txt
 1.  **Cargar Documentos:** Colocar los archivos PDF o TXT de estudio en la carpeta `knowledge_base/`.
 2.  **Lanzar el Servidor:**
     ```bash
-    python app.py
+    flask run
     ```
 3.  **Acceder al Chat:** Abrir el navegador en [http://127.0.0.1:5000](http://127.0.0.1:5000).
 

@@ -60,6 +60,21 @@ class TutorAgent:
             result = response.json()
             answer_text = result.get("response", "{}")
             
+            # === LOGS PARA LA TERMINAL (EVIDENCIA DE FUNCIONAMIENTO) ===
+            print("\n" + "="*60)
+            print("🚀 [RAG SYSTEM LOG] - CONSULTA PROCESADA")
+            print("="*60)
+            print(f"📁 Colección Activa: {self.current_collection}")
+            print("⚙️  Configuración del Sistema:")
+            print("   -> System Prompt: Forzando rol de Tutor Experto.")
+            print("   -> Restricción: Responder ÚNICAMENTE con la información del contexto.")
+            print("   -> Formato de Salida: Objeto JSON estricto.")
+            print("\n📄 Contexto recuperado por BM25 (Fragmento):")
+            print(context_text[:300] + "..." if len(context_text) > 300 else context_text)
+            print("\n🧠 Salida Cruda del LLM (Formato JSON evidenciado):")
+            print(answer_text)
+            print("="*60 + "\n")
+            
             # Intentar parsear como JSON para validar el formato
             answer_json = json.loads(answer_text)
             return answer_json, context_text
