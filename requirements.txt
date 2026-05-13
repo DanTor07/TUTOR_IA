@@ -5,3 +5,15 @@ pydantic
 python-dotenv
 markdown
 PyPDF2
+
+# RAG semantico
+langchain>=0.3
+langchain-community>=0.3
+langchain-chroma>=0.2
+langchain-huggingface>=0.1
+sentence-transformers>=3.0
+chromadb>=0.5
+pypdf>=5.0
+
+# Interfaz Streamlit
+streamlit>=1.35
